@@ -12,10 +12,11 @@
 
 <body>
     <form action="blast_demo_receive.php" method="post">
-        <input type="text" name="query_seq">
-        <input type="text" name="evalue">
-        <input type="radio" name="blast_type">
-        <input id="dbselect" name="species">
+        Input a sequence: <br>
+        <textarea type="text" name="query_seq"></textarea><br>
+        E-value: <input type="text" name="evalue"><br>
+        Blast type<input type="radio" name="blast_type"><br>
+        which database: <input id="dbselect" name="species"><br>
     </form>
 </body>
 <!--nesscery for scrabble box-->
@@ -23,7 +24,7 @@
 <script src="css/magicsuggest.js"></script>
 <script>
     $('#dbselect').magicSuggest({
-        placeholder: 'Type the keyword.',
+        placeholder: 'which database',
         data: [
             <?php
             $link = mysqli_connect('140.116.56.177', 'onlineDB', 'bidlab711') or die("Unable to connect the database."); //連接資料庫
@@ -42,7 +43,6 @@
         noSuggestionText: 'No spcies are matched.',
         selectFirst: true,
         strictSuggest: true,
-        maxSelection: 1,
     });
 </script>
 
