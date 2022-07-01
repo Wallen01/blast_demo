@@ -14,7 +14,7 @@
     <form action="blast_demo_receive.php" method="post">
         Input a sequence: <br>
         <textarea type="text" name="query_seq"></textarea><br>
-        E-value: <input type="text" name="evalue" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" ><br>
+        E-value: <input type="text" name="evalue"><br>
         Blast type<br>
         <label><input type="radio" name="blast_type" value="n">N to N</label><br>
         <label><input type="radio" name="blast_type" value="p">P to P</label><br>
