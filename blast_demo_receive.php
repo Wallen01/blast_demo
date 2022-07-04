@@ -14,7 +14,7 @@
         exit();
     }
     $query_seq = $_POST["query_seq"];
-    if($query_seq[0]!=">"){
+    if ($query_seq[0] != ">") {
         echo "Not a fastafile";
     }
     if (!stripos($query_seq, '>', stripos($query_seq, '>') + 1) === false) {
@@ -96,23 +96,37 @@
         echo "<table>";
         echo "<tr>";
         echo "<td>Source sequence id</td>";
+        echo "<td>Species</td>";
         echo "<td>Target sqquence id</td>";
         echo "<td>Percentage of identical matches</td>";
         echo "<td>Expect value</td>";
         echo "<td>Bit score</td>";
         echo "</tr>";
         for ($i = 0; $i < $result_num; $i++) {
-            echo"<tr>";
-            foreach($blast_result[$i] as $v){
-                echo"<td>";
-                echo $v;
-                echo"</td>";
+            echo "<tr>";
+            foreach ($blast_result[$i] as $k => $v) {
+
+                if ($k == 1) {
+                    $blast_result[$i][1] = explode('-', $v);
+                    foreach ($blast_result[$i][1] as $x) {
+                        echo "<td>";
+                        echo $x;
+                        echo "</td>";
+                    }
+
+                } else {
+                    echo "<td>";
+                    echo $v;
+                    echo "</td>";
+                }
             }
-            echo"</tr>";
+            echo "</tr>";
         }
         echo "</table>";
     }
-
+    echo "<textarea>";
+    print_r($blast_result);
+    echo "</textarea>";
 
 
     // $link = new mysqli('140.116.56.177', 'onlineDB', 'bidlab711', 'plantpan4') or die("Unable to connect the database."); //連接資料庫
