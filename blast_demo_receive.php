@@ -10,12 +10,15 @@
     <?php
     //獲得表單參數
     if (!isset($_POST["query_seq"])) {
-        echo "No query.";
+        echo "There is no query.<br>";
         exit();
     }
     $query_seq = $_POST["query_seq"];
+    if($query_seq[0]!=">"){
+        echo "Not a fastafile";
+    }
     if (!stripos($query_seq, '>', stripos($query_seq, '>') + 1) === false) {
-        echo "Only One Query.";
+        echo "Only One Query  IS Allowed.";
         exit();
     }
     if (isset($_POST["evalue"])) {
@@ -43,7 +46,6 @@
     } else {
         fwrite($fp1, $query_seq);
         fclose($fp1);
-        
         //調整權限
         chmod("./blastinput/$id", 0777);
     }
@@ -60,30 +62,55 @@
     echo "<br>" . $query . "<br>";
     $query = "";
     if ($blast_type == "n") {
-        $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db /home/C54076275/blastdb/" . implode(" ", $species) . " -query  /home/C54076275/public_html/playpan/blastinput/" . $id . " -out ./blastoutput/" . $id . " -outfmt 6 -evalue $evalue";
+        $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db " . implode(" ", $species) . " -query  ./blastinput/" . $id . " -out ./blastoutput/" . $id . " -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
     } else if ($blast_type == "p") {
-        $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db /home/C54076275/blastdb/" . implode(" ", $species) . " -query  /home/C54076275/public_html/playpan/blastinput/" . $id . " -out /home/C54076275/public_html/playpan/blastoutput/" . $id . " -outfmt 6 -evalue $evalue";
+        $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db " . implode(" ", $species) . " -query  ./blastinput/" . $id . " -out ./blastoutput/" . $id . " -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
     }
 
     echo "<br>$query<br>";
     echo "<br>system";
-    $last_line = system($query, $return_var);
+    system($query, $return_var);
     echo "<br>return_var:";
     print_r($return_var);
-    echo "<br>last_line:";
-    print_r($last_line);
-    
-    if (!$last_line) {
-        echo "blast fail.";
-    } else {
-        echo "Cool";
+
+    if ($return_var == 0) {
+        echo "BLAST RESULT<br>";
         echo "<textarea>";
-        $blast_result = explode(PHP_EOL, file_get_contents("./blastoutput/$id"));
-        // foreach ($blast_result as $k => $v) {
-        //     $blast_result[$k] = explode(chr(9), $v);
-        // }
-        print_r($blast);
-        echo "</textarea>";
+        $blast_result = explode(PHP_EOL, file_get_contents("./blastoutput/$id")); //在文件結尾有換行符號，因此會多出一個空白arr
+        foreach ($blast_result as $k => $v) {
+            $blast_result[$k] = explode(chr(9), $v);
+        }
+        print_r($blast_result);
+        echo "</textarea><br>";
+        echo sizeof($blast_result);
+        echo "<br>";
+        echo sizeof($blast_result, 1);
+        echo "<br>";
+    } else {
+        echo "blast fail :(";
+    }
+
+    $result_num = sizeof($blast_result);
+    if ($result_num >= 2) {
+        $result_num--;
+        echo "<table>";
+        echo "<tr>";
+        echo "<td>Source sequence id</td>";
+        echo "<td>Target sqquence id</td>";
+        echo "<td>Percentage of identical matches</td>";
+        echo "<td>Expect value</td>";
+        echo "<td>Bit score</td>";
+        echo "</tr>";
+        for ($i = 0; $i < $result_num; $i++) {
+            echo"<tr>";
+            foreach($blast_result[$i] as $v){
+                echo"<td>";
+                echo $v;
+                echo"</td>";
+            }
+            echo"</tr>";
+        }
+        echo "</table>";
     }
 
 

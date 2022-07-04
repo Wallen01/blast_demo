@@ -13,12 +13,12 @@
 <body>
     <form action="blast_demo_receive.php" method="post">
         Input a sequence: <br>
-        <textarea type="text" name="query_seq"></textarea><br>
-        E-value: <input type="text" name="evalue"><br>
+        <textarea type="text" name="query_seq" required></textarea><br>
+        E-value: <input type="number" name="evalue" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"><br>
         Blast type<br>
-        <label><input type="radio" name="blast_type" value="n">N to N</label><br>
+        <label><input type="radio" name="blast_type" value="n" checked>N to N</label><br>
         <label><input type="radio" name="blast_type" value="p">P to P</label><br>
-        which database: <input id="dbselect" name="species"><br>
+        which database: <input id="dbselect" name="species" required><br>
         <input type="submit">
     </form>
 </body>
@@ -27,7 +27,7 @@
 <script src="css/magicsuggest.js"></script>
 <script>
     $('#dbselect').magicSuggest({
-        placeholder: 'which database',
+        placeholder: 'Leave Space for Select All',
         data: [
             <?php
             $link = mysqli_connect('140.116.56.177', 'onlineDB', 'bidlab711') or die("Unable to connect the database."); //連接資料庫
