@@ -8,6 +8,7 @@
 
 <body>
     <?php
+    //獲得表單參數
     if (!isset($_POST["query_seq"])) {
         echo "No query.";
         exit();
@@ -26,30 +27,36 @@
     if (isset($_POST["species"])) {
         $species = $_POST["species"];
     }
+
+    //顯示表單參數
     echo "
-    query_seq=$query_seq;<br>
-    evalue=$evalue;<br>
+    query_seq=<textarea>$query_seq</textarea><br>
+    evalue=$evalue<br>
     blast_type=$blast_type<br>
     species=$species<br>
     ";
+
+    //將輸入的序列儲存為文件
     $id = time();
     if (!$fp1 = fopen("./blastinput/$id", "w")) {
         echo "fail to open blastinput/" . $id . "<br>";
     } else {
         fwrite($fp1, $query_seq);
         fclose($fp1);
+        
+        //調整權限
         chmod("./blastinput/$id", 0777);
     }
 
+    //將物種轉為固定格式
     print_r($species);
-    //turn species to A_a format
     for ($i = 0, $num = count($species); $i < $num; $i++) {
         $species[$i] = str_replace(" ", "_", $species[$i]);
     }
     echo "<br>";
     print_r($species);
 
-    //decide blast n or p
+    //BLAST N OR P
     echo "<br>" . $query . "<br>";
     $query = "";
     if ($blast_type == "n") {
@@ -65,18 +72,19 @@
     print_r($return_var);
     echo "<br>last_line:";
     print_r($last_line);
-    // if (!system($query)) {
-    //     echo "blast fail.";
-    // } else {
-    //     echo "Cool";
-    //     echo "<textarea>";
-    //     $blast_result = explode(PHP_EOL, file_get_contents("./blastoutput/$id"));
-    //     // foreach ($blast_result as $k => $v) {
-    //     //     $blast_result[$k] = explode(chr(9), $v);
-    //     // }
-    //     print_r($blast);
-    //     echo "</textarea>";
-    // }
+    
+    if (!$last_line) {
+        echo "blast fail.";
+    } else {
+        echo "Cool";
+        echo "<textarea>";
+        $blast_result = explode(PHP_EOL, file_get_contents("./blastoutput/$id"));
+        // foreach ($blast_result as $k => $v) {
+        //     $blast_result[$k] = explode(chr(9), $v);
+        // }
+        print_r($blast);
+        echo "</textarea>";
+    }
 
 
 
