@@ -22,19 +22,18 @@
 
     $id = time();
     $target_file="";
-    
-    if (isset($_POST["query_seq"])) {
+    if ($_POST["query_seq"]!="") {
         //將輸入的序列儲存為文件
         $target_file="./blastinput/$id";
         if (!$fp1 = fopen($target_file, "w")) {
             echo "fail to open blastinput/" . $id . "<br>";
         } else {
-            fwrite($fp1, $query_seq);
+            fwrite($fp1, $_POST["query_seq"]);
             fclose($fp1);
             //調整權限
             chmod($target_file, 0777);
         }
-    } else if (isset($_FILES["uploadfile"])) {
+    } else if ($_FILES["uploadfile"]["tmp_name"]) {
         //儲存的資料夾
         $target_dir = "./blastinput/";
         //資料夾+ID+檔名.副檔名
@@ -77,8 +76,10 @@
         }
     }else{
         echo "You haven't insert your input.";
+        exit();
     }
 
+    echo $target_file."<br>";
     //check if fasta format
     $query_seq = file_get_contents($target_file);
     $pos;
@@ -97,7 +98,7 @@
 
     //顯示表單參數
     echo "
-    query_seq=<textarea>$query_seq</textarea><br>
+    query_seq=<br><textarea>$query_seq</textarea><br>
     evalue=$evalue<br>
     blast_type=$blast_type<br>
     species=$species<br>
@@ -117,7 +118,7 @@
     echo "<br>" . $query . "<br>";
     $query = "";
     if ($blast_type == "n") {
-        $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db " . implode(" ", $species) . " -query  ./blastinput/" . $id . " -out ./blastoutput/" . $id . " -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
+        $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db " . implode(" ", $species) . " -query  $target_file -out ./blastoutput/" . $id . " -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
     } else if ($blast_type == "p") {
         $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db " . implode(" ", $species) . " -query  ./blastinput/" . $id . " -out ./blastoutput/" . $id . " -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
     }
