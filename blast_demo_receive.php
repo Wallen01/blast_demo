@@ -9,18 +9,7 @@
 <body>
     <?php
     //獲得表單參數
-    if (!isset($_POST["query_seq"])) {
-        echo "There is no query.<br>";
-        exit();
-    }
-    $query_seq = $_POST["query_seq"];
-    if ($query_seq[0] != ">") {
-        echo "Not a fastafile";
-    }
-    if (!stripos($query_seq, '>', stripos($query_seq, '>') + 1) === false) {
-        echo "Only One Query  IS Allowed.";
-        exit();
-    }
+
     if (isset($_POST["evalue"])) {
         $evalue = $_POST["evalue"];
     }
@@ -31,6 +20,81 @@
         $species = $_POST["species"];
     }
 
+    $id = time();
+    $target_file="";
+    
+    if (isset($_POST["query_seq"])) {
+        //將輸入的序列儲存為文件
+        $target_file="./blastinput/$id";
+        if (!$fp1 = fopen($target_file, "w")) {
+            echo "fail to open blastinput/" . $id . "<br>";
+        } else {
+            fwrite($fp1, $query_seq);
+            fclose($fp1);
+            //調整權限
+            chmod($target_file, 0777);
+        }
+    } else if (isset($_FILES["uploadfile"])) {
+        //儲存的資料夾
+        $target_dir = "./blastinput/";
+        //資料夾+ID+檔名.副檔名
+        $target_file = $target_dir . $id . basename($_FILES["uploadfile"]["name"]);
+        //副檔名
+        $FileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $uploadOk = 1;
+
+        // Check if file already exists
+        if (file_exists($target_file)) {
+            echo "Sorry, file already exists.";
+            $uploadOk = 0;
+        }
+
+        // Check file size
+        if ($_FILES["uploadfile"]["size"] > 500000) {
+            echo "Sorry, your file is too large.";
+            $uploadOk = 0;
+        }
+
+        // Allow certain file formats
+        if (
+            $FileType != "fasta" && $FileType != "fas" && $FileType != "txt"
+        ) {
+            echo "Sorry, only FASTA ,FAS & TXT files are allowed.";
+            $uploadOk = 0;
+        }
+
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0) {
+            echo "Sorry, your file was not uploaded.";
+            // if everything is ok, try to upload file
+        } else {
+            if (move_uploaded_file($_FILES["uploadfile"]["tmp_name"], $target_file)) {
+                chmod($target_file, 0777);
+                echo "The file " . htmlspecialchars(basename($_FILES["uploadfile"]["name"])) . " has been uploaded.";
+            } else {
+                echo "Sorry, there was an error uploading your file.";
+            }
+        }
+    }else{
+        echo "You haven't insert your input.";
+    }
+
+    //check if fasta format
+    $query_seq = file_get_contents($target_file);
+    $pos;
+    //檔案為空
+    if ($query_seq == "") {
+        echo "Your input is empty.";
+    }
+    //不含有">"
+    else if ($pos = stripos($query_seq, ">") === false) {
+        echo "Your query isn't a fasta format.";
+    }
+    //有兩個query
+    else if (stripos($query_seq, ">", $pos + 1) !== false) {
+        echo "Please only insert one query.";
+    }
+
     //顯示表單參數
     echo "
     query_seq=<textarea>$query_seq</textarea><br>
@@ -39,16 +103,7 @@
     species=$species<br>
     ";
 
-    //將輸入的序列儲存為文件
-    $id = time();
-    if (!$fp1 = fopen("./blastinput/$id", "w")) {
-        echo "fail to open blastinput/" . $id . "<br>";
-    } else {
-        fwrite($fp1, $query_seq);
-        fclose($fp1);
-        //調整權限
-        chmod("./blastinput/$id", 0777);
-    }
+
 
     //將物種轉為固定格式
     print_r($species);
@@ -113,7 +168,6 @@
                         echo $x;
                         echo "</td>";
                     }
-
                 } else {
                     echo "<td>";
                     echo $v;

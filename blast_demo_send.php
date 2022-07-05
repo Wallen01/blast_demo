@@ -11,9 +11,10 @@
 </head>
 
 <body>
-    <form action="blast_demo_receive.php" method="post">
+    <form action="blast_demo_receive.php" method="post" enctype="multipart/form-data">
         Input a sequence: <br>
-        <textarea type="text" name="query_seq" required></textarea><br>
+        <textarea type="text" name="query_seq"></textarea><br>
+        <input type="file" name="uploadfile">
         E-value: <input type="number" name="evalue" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"><br>
         Blast type<br>
         <label><input type="radio" name="blast_type" value="n" checked>N to N</label><br>
