@@ -11,6 +11,7 @@
     $id = time();
     $target_file = "";
     $output_file = "";
+    $query_or_file = true;
     if ($_POST["query_seq"] != "") {
         //將輸入的序列儲存為文件
         $target_file = "./blastinput/$id";
@@ -24,6 +25,7 @@
             chmod($target_file, 0777);
         }
     } else if ($_FILES["uploadfile"]["tmp_name"]) {
+        $query_or_file = false;
         //資料夾+ID+檔名.副檔名
         $target_file = "./blastinput/" . $id . basename($_FILES["uploadfile"]["name"]);
         $output_file = "./blastoutput/" . $id . basename($_FILES["uploadfile"]["name"]);
@@ -68,7 +70,6 @@
         exit();
     }
 
-    echo $target_file . "<br>";
     //check if fasta format
     $query_seq = file_get_contents($target_file);
     $pos;
@@ -89,17 +90,13 @@
     $species = array();
     $evalue = $_POST["evalue"];
     $blast_type = $_POST["blast_type"];
-    $species;
     if (!$_POST["species"]) {
-
-        echo "nothing<br>";
         $link = new mysqli('140.116.56.177', 'onlineDB', 'bidlab711', 'plantpan4') or die("Unable to connect the database."); //連接資料庫
         mysqli_query($link, "SET NAMES 'utf8'"); //設定語系
         mysqli_select_db($link, 'plantpan4');
         $result = mysqli_query($link, "select species_info from species_info order by species_info;");
         while ($name_row = mysqli_fetch_row($result)) {
             array_push($species, str_replace(" ", "_", $name_row[0]));
-            echo str_replace(" ", "_", $name_row[0]) . "<br>";
         }
         mysqli_close($link);
     } else {
@@ -107,19 +104,25 @@
     }
 
     //顯示表單參數
-    echo "
-    query_seq=<br><textarea>$query_seq</textarea><br>
-    evalue=$evalue<br>
-    blast_type=$blast_type<br>
-    species=$species<br>
-    ";
-    print_r($species);
-
-
-
+    //The Seq
+    if ($query_or_file) {
+        echo "Your input sequence is: <br>
+        <textarea><strong>" . $_POST['query_seq'] . "</strong></textarea>";
+    } else {
+        echo "Your input filename is: <strong>" . basename($_FILES["uploadfile"]["name"]) . "</strong><br>";
+    }
+    //E-value
+    echo "E-value: <strong>$evalue</strong><br>";
+    //Blast type
+    if ($blast_type = "n") {
+        echo "The blast type is <strong>Nucleotide to Nucleotide</strong><br>";
+    } else if ($blast_type = "p") {
+        echo "The blast type is <strong>Protein to Protein</strong><br>";
+    }
+    //select Species
+    echo "The Compared DataBase is <strong>" . implode(", ", $species) . "</strong><br>";
 
     //將物種轉為固定格式
-    print_r($species);
     for ($i = 0, $num = count($species); $i < $num; $i++) {
 
         $species[$i] = str_replace(" ", "_", $species[$i]);
@@ -128,7 +131,6 @@
         }
     }
     echo "<br>";
-    print_r($species);
 
     //BLAST N OR P
     $query = "";
@@ -137,30 +139,23 @@
     } else if ($blast_type == "p") {
         $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
     }
-    echo "<br>$query<br>";
-    echo "system<br>";
     system($query, $return_var);
     chmod($output_file, 0777);
-    echo "<br>return_var:";
-    print_r($return_var);
-    echo "<br>";
+
     if ($return_var == 0) {
         echo "BLAST RESULT<br>";
-        echo "<textarea>";
         $blast_result = explode(PHP_EOL, file_get_contents($output_file)); //在文件結尾有換行符號，因此會多出一個空白arr
         foreach ($blast_result as $k => $v) {
             $blast_result[$k] = explode(chr(9), $v);
         }
-        print_r($blast_result);
-        echo "</textarea><br>";
     } else {
-        echo "blast fail :(<br>";
+        echo "Blast fail :(<br>";
     }
 
     $result_num = sizeof($blast_result);
     if ($result_num >= 2) {
         $result_num--;
-        echo "<table>";
+        echo "<font size='5'><table width='1140px' align='center' border='1' style='border-collapse:collapse; word-break:break-all' borderColor='black'><tr align='center'>";
         echo "<tr>";
         echo "<td>Source sequence id</td>";
         echo "<td>Species</td>";
@@ -190,11 +185,8 @@
         }
         echo "</table>";
     }
-    echo "<textarea>";
-    print_r($blast_result);
-    echo "</textarea>";
-    // system("rm $target_file");
-    // system("rm $output_file");
+    system("rm $target_file");
+    system("rm $output_file");
     ?>
 </body>
 
