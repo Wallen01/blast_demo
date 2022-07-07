@@ -15,7 +15,8 @@
         Input a sequence: <br>
         <textarea type="text" name="query_seq"></textarea><br>
         <input type="file" name="uploadfile">
-        E-value: <input type="text" name="evalue" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"><br>
+        E-value: <input type="text" name="evalue" value="0.00001" placeholder="0 < E-value <=10";
+         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"><br>
         Blast type<br>
         <label><input type="radio" name="blast_type" value="n" checked>N to N</label><br>
         <label><input type="radio" name="blast_type" value="p">P to P</label><br>
