@@ -2,8 +2,21 @@
 
 <head>
     <title>
-        blast
+        Blast
     </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PlantPAN 3.0</title>
+
+    <!-- css -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/style.css" rel="stylesheet">
+    <link href="color/default.css" rel="stylesheet">
+    <link href="css/magicsuggest.css" rel="stylesheet">
 </head>
 
 <body>
@@ -93,12 +106,10 @@
     if (!$_POST["species"]) {
         $link = new mysqli('140.116.56.177', 'onlineDB', 'bidlab711', 'plantpan4') or die("Unable to connect the database."); //連接資料庫
         mysqli_query($link, "SET NAMES 'utf8'"); //設定語系
-        mysqli_select_db($link, 'plantpan4');
         $result = mysqli_query($link, "select species_info from species_info order by species_info;");
         while ($name_row = mysqli_fetch_row($result)) {
             array_push($species, str_replace(" ", "_", $name_row[0]));
         }
-        mysqli_close($link);
     } else {
         $species = $_POST["species"];
     }
@@ -170,11 +181,13 @@
 
                 if ($k == 1) {
                     $blast_result[$i][1] = explode('-', $v, 2);
-                    foreach ($blast_result[$i][1] as $x) {
-                        echo "<td>";
-                        echo $x;
-                        echo "</td>";
-                    }
+                    $blast_result[$i][1][0] = str_replace("_", " ", $blast_result[$i][1][0]);
+                    echo "<td>";
+                    echo $blast_result[$i][1][0];
+                    echo "</td>";
+                    echo "<td>";
+                    echo "<a href='./gene_info.php?species=" . $blast_result[$i][1][0] . "&NotGraphic_GeneID=" . $blast_result[$i][1][1] . "'>" . $blast_result[$i][1][1] . "</a>";
+                    echo "</td>";
                 } else {
                     echo "<td>";
                     echo $v;
@@ -185,8 +198,17 @@
         }
         echo "</table>";
     }
-    system("rm $target_file");
-    system("rm $output_file");
+    mysqli_close($link);
+    // system("rm $target_file");
+    // system("rm $output_file");
+
+    $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt 0 -evalue $evalue";
+    system($query, $return_var);
+    $alignment_result = explode('>', file_get_contents($output_file));
+    $alignment_result[(count($alignment_result)-1)] = substr($alignment_result[(count($alignment_result)-1)], 0, strpos($alignment_result[(count($alignment_result)-1)], "\n\n", 0) + 3);
+    foreach ($alignment_result as $v) {
+        echo "<textarea>" . $v . "</textarea>";
+    }
     ?>
 </body>
 
