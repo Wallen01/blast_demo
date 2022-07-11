@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -168,6 +169,7 @@
         $result_num--;
         echo "<font size='5'><table width='1140px' align='center' border='1' style='border-collapse:collapse; word-break:break-all' borderColor='black'><tr align='center'>";
         echo "<tr>";
+        echo "<td>See alignment</td>";
         echo "<td>Source sequence id</td>";
         echo "<td>Species</td>";
         echo "<td>Target sqquence id</td>";
@@ -177,8 +179,10 @@
         echo "</tr>";
         for ($i = 0; $i < $result_num; $i++) {
             echo "<tr>";
+            echo "<td>";
+            echo "<a href=\"#".$blast_result[$i][1]."\">".$blast_result[$i][1]."</a>";
+            echo "</td>";
             foreach ($blast_result[$i] as $k => $v) {
-
                 if ($k == 1) {
                     $blast_result[$i][1] = explode('-', $v, 2);
                     $blast_result[$i][1][0] = str_replace("_", " ", $blast_result[$i][1][0]);
@@ -205,11 +209,18 @@
     $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt 0 -evalue $evalue";
     system($query, $return_var);
     $alignment_result = explode('>', file_get_contents($output_file));
-    $alignment_result[(count($alignment_result)-1)] = substr($alignment_result[(count($alignment_result)-1)], 0, strpos($alignment_result[(count($alignment_result)-1)], "\n\n", 0) + 3);
+    unset($alignment_result[0]);
+    array_values($alignment_result);
+    $alignment_result[(count($alignment_result)-1)] = substr($alignment_result[(count($alignment_result)-1)], 0, strpos($alignment_result[(count($alignment_result)-1)], "\n\n\n", 0) + 3);
     foreach ($alignment_result as $v) {
-        echo "<textarea>" . $v . "</textarea>";
+        $result_species_id=substr($v,0,strpos($v, "\n", 0));
+        echo "<div id='".$result_species_id."'>";
+        $result_species_id=explode("-",$result_species_id,2);
+        echo "Species: ".$result_species_id[0]."\tGeneID: ".$result_species_id[1]." <br>";
+        echo "<textarea>" . $v . "</textarea><br>";
+        echo "</div>";
     }
-    ?>
+?>
 </body>
 
 </html>
