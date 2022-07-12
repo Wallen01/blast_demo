@@ -112,7 +112,7 @@
         $output_file = "";
         $query_or_file = true;
         $something_wrong = false;
-        $ERROR_MESSAGE;
+        $ERROR_MESSAGE = array();
         /* 可能出錯的部分
          * 1:無法開啟臨時Query存檔->使用者須稍等幾秒?可能ID衝突
          * 2:檔名已存在
@@ -231,19 +231,18 @@
                         </div>
                         <hr class='marginbot-50'>
                     </div>
-                </div>
-            </div>";
+                </div>";
 
         ////輸入沒問題
         if ($something_wrong) {
             echo "Hey, there might be something wrong.<br>";
             $ShowError = array(
-                1 => "Please wait a second then try again.<br>", 2 => "Please wait a second then try again.<br>", 3 => "The file is too large.<br>", 4 => "Only accept fasta / fas / txt file.<br>", 5 => "Something strange just happened.<br>", 6 => "I think you forgot inserting your Query.<br>", 7 => "Your file is empty.<br>", 8 => "The fasta format is a little strange.<br>", 9 => "Only con insert one Query.<br>", 10 => "E-value is out of range.(0 < E-value <= 10)<br>"
+                1 => "Please wait a second then try again.<br>", 2 => "Please wait a second then try again.<br>", 3 => "The file is too large.<br>", 4 => "Only accept fasta / fas / txt file.<br>", 5 => "Something strange just happened.<br>", 6 => "I think you forgot inserting your Query.<br>", 7 => "Your file is empty.<br>", 8 => "The fasta format is a little strange.<br>", 9 => "You only can insert one Query.<br>", 10 => "E-value is out of range.(0 < E-value <= 10)<br>"
             );
             foreach ($ERROR_MESSAGE as $v) {
                 echo $ShowError[$v];
             }
-            echo "</section>";
+            echo "</div></section>";
         } else {
             //顯示表單參數
             echo "<div class='container'>";
@@ -327,69 +326,73 @@
                 <div class='col-lg-8 col-lg-offset-2'>
                     <div class='section-heading text-center'>
                         <h2 class='h-bold'>";
-            if ($return_var == 0)   echo "BLAST RESULT";
-            else    echo "Blast fail :(<br>";
-            echo "
+            if ($return_var != 0) {
+                echo "Blast fail :(<br>
                         </h2>
+                    </div>
+                <hr class='marginbot-50'>
+                </div>
+            </div>";
+            } else {
+                echo "BLAST RESULT";
+                echo "      </h2>
                      </div>
                 <hr class='marginbot-50'>
-            </div>
+                </div>
             </div>";
 
-            $result_num = sizeof($blast_result);
-            if ($result_num >= 2) {
-                $result_num--;
-                echo "<div class='table-responsive'>";
-                echo "<table class='table' align='center' width='1240px'>";
-                echo "<tr align='center'><strong>";
-                // echo "<table class='table' width='1240px' align='center' border='1' style='border-collapse:collapse; word-break:break-all' borderColor='black'>
-                // <tr align='center'>";
-                echo "<td>Alignment</td>";
-                echo "<td>Species</td>";
-                echo "<td>Target sequence id</td>";
-                echo "<td>Identical matches (%)</td>";
-                echo "<td>E-value</td>";
-                echo "<td>Bit score</td>";
-                echo "<td>Download</td>";
-                echo "</strong></tr>";
-                for ($i = 0; $i < $result_num; $i++) {
-                    echo "<tr align='center'>";
-                    echo "<td>";
-                    echo "<a href=\"#" . $blast_result[$i][1] . "\"><img src='./img/icons/left-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
-                    echo "</td>";
-                    foreach ($blast_result[$i] as $k => $v) {
-                        if ($k == 1) {
-                            $blast_result[$i][1] = explode('-', $v, 2);
-                            $blast_result[$i][1][0] = str_replace("_", " ", $blast_result[$i][1][0]);
-                            echo "<td>";
-                            echo $blast_result[$i][1][0];
-                            echo "</td>";
-                            echo "<td>";
-                            echo "<a target='_blank' href='./gene_info.php?species=" . $blast_result[$i][1][0] . "&NotGraphic_GeneID=" . $blast_result[$i][1][1] . "'>" . $blast_result[$i][1][1] . "</a>";
-                            echo "</td>";
-                        } else if ($k > 1) {
-                            echo "<td>";
-                            echo $v;
-                            echo "</td>";
+                $result_num = sizeof($blast_result);
+                if ($result_num >= 2) {
+                    $result_num--;
+                    echo "<div class='table-responsive'>";
+                    echo "<table class='table' align='center' width='1240px'>";
+                    echo "<tr align='center'><strong>";
+                    echo "<td>Alignment</td>";
+                    echo "<td>Species</td>";
+                    echo "<td>Target sequence id</td>";
+                    echo "<td>Identical matches (%)</td>";
+                    echo "<td>E-value</td>";
+                    echo "<td>Bit score</td>";
+                    echo "<td>Download</td>";
+                    echo "</strong></tr>";
+                    for ($i = 0; $i < $result_num; $i++) {
+                        echo "<tr align='center'>";
+                        echo "<td>";
+                        echo "<a href=\"#" . $blast_result[$i][1] . "\"><img src='./img/icons/left-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
+                        echo "</td>";
+                        foreach ($blast_result[$i] as $k => $v) {
+                            if ($k == 1) {
+                                $blast_result[$i][1] = explode('-', $v, 2);
+                                $blast_result[$i][1][0] = str_replace("_", " ", $blast_result[$i][1][0]);
+                                echo "<td>";
+                                echo $blast_result[$i][1][0];
+                                echo "</td>";
+                                echo "<td>";
+                                echo "<a target='_blank' href='./gene_info.php?species=" . $blast_result[$i][1][0] . "&NotGraphic_GeneID=" . $blast_result[$i][1][1] . "'>" . $blast_result[$i][1][1] . "</a>";
+                                echo "</td>";
+                            } else if ($k > 1) {
+                                echo "<td>";
+                                echo $v;
+                                echo "</td>";
+                            }
                         }
+                        echo "<td>";
+                        if ($blast_type = "n") {
+                            echo "<a href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=cDNA&NotGraphic_cdna=" . $blast_result[$i][1][1] . "'>";
+                        } else if ($blast_type = "p") {
+                            echo "<a target='_blank' href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=Protein&NotGraphic_protein=" . $blast_result[$i][1][1] . "'>";
+                        }
+                        echo "<img src='./img/icons/down-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
+                        echo "</td>";
+                        echo "</tr>";
                     }
-                    echo "<td>";
-                    if ($blast_type = "n") {
-                        echo "<a href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=cDNA&NotGraphic_cdna=" . $blast_result[$i][1][1] . "'>";
-                    } else if ($blast_type = "p") {
-                        echo "<a target='_blank' href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=Protein&NotGraphic_protein=" . $blast_result[$i][1][1] . "'>";
-                    }
-                    echo "<img src='./img/icons/down-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
-                    echo "</td>";
-                    echo "</tr>";
+                    echo "</table>";
+                    echo "</div>";
+                    echo "</div>";
+                    echo "</section>";
                 }
-                echo "</table>";
-                echo "</div>";
-                echo "</div>";
-                echo "</section>";
-            }
-            mysqli_close($link);
-            echo "
+                mysqli_close($link);
+                echo "
             <div class='container'>
             <div class='row'>
                 <div class='col-lg-8 col-lg-offset-2'>
@@ -401,35 +404,36 @@
             </div>
             </div>";
 
-            $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt 0 -evalue $evalue";
-            system($query, $return_var);
-            $alignment_result = explode('>', file_get_contents($output_file));
-            unset($alignment_result[0]);
-            array_values($alignment_result);
-            $alignment_result[(count($alignment_result) - 1)] = substr($alignment_result[(count($alignment_result) - 1)], 0, strpos($alignment_result[(count($alignment_result) - 1)], "\n\n\n\n", 0) + 3);
-            echo "<div class='container'>";
-            foreach ($alignment_result as $v) {
-                $result_species_id = substr($v, 0, strpos($v, "\n", 0));
-                echo "<div id='" . $result_species_id . "'></div>";
-                echo "<br><br><br><br>";
-                $result_species_id = explode("-", $result_species_id, 2);
+                $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt 0 -evalue $evalue";
+                system($query, $return_var);
+                $alignment_result = explode('>', file_get_contents($output_file));
+                unset($alignment_result[0]);
+                array_values($alignment_result);
+                $alignment_result[(count($alignment_result) - 1)] = substr($alignment_result[(count($alignment_result) - 1)], 0, strpos($alignment_result[(count($alignment_result) - 1)], "\n\n\n\n", 0) + 3);
+                echo "<div class='container'>";
+                foreach ($alignment_result as $v) {
+                    $result_species_id = substr($v, 0, strpos($v, "\n", 0));
+                    echo "<div id='" . $result_species_id . "'></div>";
+                    echo "<br><br><br><br>";
+                    $result_species_id = explode("-", $result_species_id, 2);
 
-                echo "<div class='col-md-6' style='font-size:150%'>";
-                echo "Species: ";
-                echo "<strong>" . $result_species_id[0] . "</strong>";
+                    echo "<div class='col-md-6' style='font-size:150%'>";
+                    echo "Species: ";
+                    echo "<strong>" . $result_species_id[0] . "</strong>";
+                    echo "</div>";
+
+                    echo "<div class='col-md-6' style='font-size:150%'>";
+                    echo "GeneID: ";
+                    echo "<strong>" . $result_species_id[1] . "</strong>";
+                    echo "</div>";
+
+                    echo "<textarea style='width: 1240px; height: 600px'>" . $v . "</textarea><br>";
+                }
                 echo "</div>";
-
-                echo "<div class='col-md-6' style='font-size:150%'>";
-                echo "GeneID: ";
-                echo "<strong>" . $result_species_id[1] . "</strong>";
-                echo "</div>";
-
-                echo "<textarea style='width: 1240px; height: 600px'>" . $v . "</textarea><br>";
             }
-            echo "</div>";
-            system("rm $target_file");
-            system("rm $output_file");
         }
+        if(file_exists($target_file))system("rm $target_file");
+        if(file_exists($output_file))system("rm $output_file");
     }
     ?>
 </body>
