@@ -17,6 +17,10 @@
     <link href="css/magicsuggest.css" rel="stylesheet">
     <script type="text/javascript" src="css/colorbox/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="css/colorbox/colorbox/jquery.colorbox-min.js"></script>
+    <!-- Use table sort -->
+    <script type="text/javascript" src="./css/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="./css/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/datatables.min.css" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-45242567-12"></script>
     <script>
@@ -107,6 +111,7 @@
     </section>
     <br><br><br><br>
     <div id='BLAST_SETTING'></div>
+    
     <?php
     if (isset($_POST["evalue"])) {
         $id = time();
@@ -347,9 +352,9 @@
                 if ($result_num >= 2) {
                     $result_num--;
                     echo "<div class='table-responsive'>";
-                    echo "<table class='table' align='center' width='1240px'>";
+                    echo "<table class='table' align='center' width='1240px' id='tablesort'>";
                     echo "<thead>";
-                    echo "<tr align='center'><strong>";
+                    echo "<tr>";
                     echo "<th>Alignment</th>";
                     echo "<th>Species</th>";
                     echo "<th>Target sequence id</th>";
@@ -357,9 +362,11 @@
                     echo "<th>E-value</th>";
                     echo "<th>Bit score</th>";
                     echo "<th>Download</th>";
-                    echo "</strong></tr>";
+                    echo "</tr>";
+                    echo "</thead>";
+                    echo "<tbody>";
                     for ($i = 0; $i < $result_num; $i++) {
-                        echo "<tr align='center'>";
+                        echo "<tr>";
                         echo "<td>";
                         echo "<a href=\"#" . $blast_result[$i][1] . "\"><img src='./img/icons/left-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
                         echo "</td>";
@@ -389,6 +396,7 @@
                         echo "</td>";
                         echo "</tr>";
                     }
+                    echo "</tbody>";
                     echo "</table>";
                     echo "</div>";
                     echo "</div>";
@@ -441,7 +449,6 @@
     ?>
 </body>
 <!--nesscery for scrabble box-->
-<script src="css/jquery-2.1.1.min.js"> </script>
 <script src="css/magicsuggest.js"></script>
 <script>
     $('#dbselect').magicSuggest({
@@ -465,6 +472,11 @@
         selectFirst: true,
         strictSuggest: true,
         maxSelection: null,
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#tablesort').DataTable();
     });
 </script>
 
