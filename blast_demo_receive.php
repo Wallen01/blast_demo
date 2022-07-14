@@ -105,6 +105,7 @@
             </form>
         </div>
     </section>
+    <div id='BLAST_SETTING'></div>
     <?php
     if (isset($_POST["evalue"])) {
         $id = time();
@@ -223,7 +224,7 @@
             $species = $_POST["species"];
         }
         echo "<section class='home-section color-dark'>
-            <div class='container' id='BLAST_SETTING'>
+            <div class='container'>
                 <div class='row'>
                     <div class='col-lg-8 col-lg-offset-2'>
                         <div class='section-heading text-center'>
@@ -409,12 +410,12 @@
                 $alignment_result = explode('>', file_get_contents($output_file));
                 unset($alignment_result[0]);
                 array_values($alignment_result);
-                $alignment_result[(count($alignment_result) - 1)] = substr($alignment_result[(count($alignment_result) - 1)], 0, strpos($alignment_result[(count($alignment_result) - 1)], "\n\n\n\n", 0) + 3);
+                $alignment_result[(count($alignment_result))] = substr($alignment_result[(count($alignment_result))], 0, strpos($alignment_result[(count($alignment_result))], "\n\n\n\n", 0) + 3);
                 echo "<div class='container'>";
                 foreach ($alignment_result as $v) {
                     $result_species_id = substr($v, 0, strpos($v, "\n", 0));
                     echo "<div id='" . $result_species_id . "'></div>";
-                    echo "<br><br><br><br>";
+                    echo "<br><br><br>";
                     $result_species_id = explode("-", $result_species_id, 2);
 
                     echo "<div class='col-md-6' style='font-size:150%'>";
