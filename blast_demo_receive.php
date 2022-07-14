@@ -99,12 +99,13 @@
                 </div>
                 <div class="form-group">
                     Which database:
-                    <input class="form-control" id="dbselect" name="species" required>
+                    <input class="form-control" id="dbselect" name="species">
                 </div>
                 <button type="submit">Submit</button>
             </form>
         </div>
     </section>
+    <br><br><br><br>
     <div id='BLAST_SETTING'></div>
     <?php
     if (isset($_POST["evalue"])) {
@@ -253,7 +254,7 @@
                 echo "Your input sequence is: ";
                 echo "</div>";
                 echo "<div class='col-md-9'>";
-                echo "<textarea><strong>" . $_POST['query_seq'] . "</strong></textarea>";
+                echo "<strong><textarea class='form-control'>" . $_POST['query_seq'] . "</textarea></strong>";
                 echo "</div>";
             } else {
                 echo "<div class='col-md-3'>";
@@ -347,14 +348,15 @@
                     $result_num--;
                     echo "<div class='table-responsive'>";
                     echo "<table class='table' align='center' width='1240px'>";
+                    echo "<thead>";
                     echo "<tr align='center'><strong>";
-                    echo "<td>Alignment</td>";
-                    echo "<td>Species</td>";
-                    echo "<td>Target sequence id</td>";
-                    echo "<td>Identical matches (%)</td>";
-                    echo "<td>E-value</td>";
-                    echo "<td>Bit score</td>";
-                    echo "<td>Download</td>";
+                    echo "<th>Alignment</th>";
+                    echo "<th>Species</th>";
+                    echo "<th>Target sequence id</th>";
+                    echo "<th>Identical matches (%)</th>";
+                    echo "<th>E-value</th>";
+                    echo "<th>Bit score</th>";
+                    echo "<th>Download</th>";
                     echo "</strong></tr>";
                     for ($i = 0; $i < $result_num; $i++) {
                         echo "<tr align='center'>";
@@ -433,8 +435,8 @@
                 echo "</div>";
             }
         }
-        if(file_exists($target_file))system("rm $target_file");
-        if(file_exists($output_file))system("rm $output_file");
+        if (file_exists($target_file)) system("rm $target_file");
+        if (file_exists($output_file)) system("rm $output_file");
     }
     ?>
 </body>
@@ -462,6 +464,7 @@
         noSuggestionText: 'No spcies are matched.',
         selectFirst: true,
         strictSuggest: true,
+        maxSelection: null,
     });
 </script>
 
