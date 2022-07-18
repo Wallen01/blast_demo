@@ -59,6 +59,11 @@ p {
     line-height: 1.6em;
 }
 
+th,tr {
+    text-align: center;
+    vertical-align: center;
+}
+
 p.lead {
 	font-weight: 600;
 }

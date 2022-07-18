@@ -18,6 +18,7 @@
     <script type="text/javascript" src="css/colorbox/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="css/colorbox/colorbox/jquery.colorbox-min.js"></script>
     <!-- Use table sort -->
+    <script type="text/javascript" src="./css/bootstrap.min.js"></script>
     <script type="text/javascript" src="./css/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="./css/datatables.min.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/datatables.min.css" />
@@ -324,6 +325,7 @@
             echo "<strong>" . $blast_result[0][0] . "</strong>";
             echo "</div>";
             echo "</div>";
+            echo "</div>";
             echo "</section>";
 
             echo "<section class='home-section color-dark'>";
@@ -333,14 +335,14 @@
                     <div class='col-lg-8 col-lg-offset-2'>
                         <div class='section-heading text-center'>
                         <h2 class='h-bold'>";
-                    if ($return_var != 0) {
-                    echo "Blast fail :(<br>
+            if ($return_var != 0) {
+                echo "Blast fail :(<br>
                         </h2>
                         </div>
                         <hr class='marginbot-50'>
                     </div>
                 </div>";
-                    } else {
+            } else {
                 echo "BLAST RESULT";
                 echo "  </h2>
                         </div>
@@ -352,81 +354,67 @@
                 if ($result_num >= 2) {
                     $result_num--;
                     echo "
-                    <ul class=nav nav-tabs>
+                    <ul class='nav nav-tabs' id='tabs'>
                         <li class='active'>
-                            <a herf='tab-tab1' data-toggle='tab'>Information</a>
+                            <a href='#tab-table1' data-toggle='tab'>Information</a>
                         </li>
                         <li>
-                        <a herf='tab-tab2' data-toggle='tab'>Alignment</a>
+                            <a href='#tab-table2' data-toggle='tab'>Alignment</a>
                         </li>
                     </ul>";
-                    echo "<div class='tab-content'>
-                    <div class='tab-pane active' id='tab-table1'>";
-                    echo "<div class='table-responsive'>";
-                    echo "<table class='table' align='center' width='1240px' id='tablesort'>";
-                    echo "<thead>";
-                    echo "<tr>";
-                    echo "<th>Alignment</th>";
-                    echo "<th>Species</th>";
-                    echo "<th>Target sequence id</th>";
-                    echo "<th>Identical matches (%)</th>";
-                    echo "<th>E-value</th>";
-                    echo "<th>Bit score</th>";
-                    echo "<th>Download</th>";
-                    echo "</tr>";
-                    echo "</thead>";
-                    echo "<tbody>";
+                    echo "<div class='tab-content'>";
+                    echo "  <div class='tab-pane active' id='tab-table1'>";
+                    echo "      <div class='table-responsive'>";
+                    echo "          <table class='table' width='1240px' id='information'>";
+                    echo "          <thead>";
+                    echo "              <tr>";
+                    echo "              <th>Alignment</th>";
+                    echo "              <th>Species</th>";
+                    echo "              <th>Target sequence id</th>";
+                    echo "              <th>Identical matches (%)</th>";
+                    echo "              <th>E-value</th>";
+                    echo "              <th>Bit score</th>";
+                    echo "              <th>Download</th>";
+                    echo "              </tr>";
+                    echo "          </thead>";
+                    echo "          <tbody>";
                     for ($i = 0; $i < $result_num; $i++) {
-                        echo "<tr>";
-                        echo "<td>";
-                        echo "<a href=\"#" . $blast_result[$i][1] . "\"><img src='./img/icons/left-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
-                        echo "</td>";
+                        echo "          <tr>";
+                        echo "          <td>";
+                        echo "          <a href=\"#" . $blast_result[$i][1] . "\"><img src='./img/icons/left-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
+                        echo "          </td>";
                         foreach ($blast_result[$i] as $k => $v) {
                             if ($k == 1) {
                                 $blast_result[$i][1] = explode('-', $v, 2);
                                 $blast_result[$i][1][0] = str_replace("_", " ", $blast_result[$i][1][0]);
-                                echo "<td>";
+                                echo "  <td>";
                                 echo $blast_result[$i][1][0];
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a target='_blank' href='./gene_info.php?species=" . $blast_result[$i][1][0] . "&NotGraphic_GeneID=" . $blast_result[$i][1][1] . "'>" . $blast_result[$i][1][1] . "</a>";
-                                echo "</td>";
+                                echo "  </td>";
+                                echo "  <td>";
+                                echo "  <a target='_blank' href='./gene_info.php?species=" . $blast_result[$i][1][0] . "&NotGraphic_GeneID=" . $blast_result[$i][1][1] . "'>" . $blast_result[$i][1][1] . "</a>";
+                                echo "  </td>";
                             } else if ($k > 1) {
-                                echo "<td>";
+                                echo "  <td>";
                                 echo $v;
-                                echo "</td>";
+                                echo "  </td>";
                             }
                         }
-                        echo "<td>";
+                        echo "          <td>";
                         if ($blast_type = "n") {
-                            echo "<a href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=cDNA&NotGraphic_cdna=" . $blast_result[$i][1][1] . "'>";
+                            echo "      <a href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=cDNA&NotGraphic_cdna=" . $blast_result[$i][1][1] . "'>";
                         } else if ($blast_type = "p") {
-                            echo "<a target='_blank' href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=Protein&NotGraphic_protein=" . $blast_result[$i][1][1] . "'>";
+                            echo "      <a target='_blank' href='sequence.php?species=" . $blast_result[$i][1][0] . "&type=Protein&NotGraphic_protein=" . $blast_result[$i][1][1] . "'>";
                         }
-                        echo "<img src='./img/icons/down-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
-                        echo "</td>";
-                        echo "</tr>";
+                        echo "          <img src='./img/icons/down-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
+                        echo "          </td>";
+                        echo "          </tr>";
                     }
-                    echo "</tbody>";
-                    echo "</table>";
+                    echo "          </tbody>";
+                    echo "          </table>";
+                    echo "      </div>";
                     echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</section>";
                 }
                 mysqli_close($link);
-                echo "
-            <div class='container'>
-            <div class='row'>
-                <div class='col-lg-8 col-lg-offset-2'>
-                    <div class='section-heading text-center'>
-                        <h2 class='h-bold'>SEQUENCE ALIGNMENT</h2>
-                    </div>
-                    <hr class='marginbot-50'>
-                </div>
-            </div>
-            </div>";
 
                 $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt 0 -evalue $evalue";
                 system($query, $return_var);
@@ -434,33 +422,34 @@
                 unset($alignment_result[0]);
                 array_values($alignment_result);
                 $alignment_result[(count($alignment_result))] = substr($alignment_result[(count($alignment_result))], 0, strpos($alignment_result[(count($alignment_result))], "\n\n\n\n", 0) + 3);
-                echo "<div class='container'>";
+                echo "
+                        <div class='tab-pane' id='tab-table2'>
+                            <div class='table-responsive'>
+                                <table class='table' align='center' width='1240px' id='alignment'>
+                                <thead>
+                                    <tr>
+                                    <td>Species</td>
+                                    <td>GeneID</td>
+                                    <td>Aligment</td>
+                                    </tr>
+                                </thead>
+                                <tbody>";
                 foreach ($alignment_result as $v) {
                     $result_species_id = substr($v, 0, strpos($v, "\n", 0));
-                    echo "
-                    <div class='tab-content'>
-                    <div class='tab-pane active' id='tab-table1'>
-                        <div class='table-responsive'>
-                            <table class='table' align='center' width='1240px' id='tablesort'>
-                                <thead>
-                                    <tr>"
-                    echo "<div id='" . $result_species_id . "'></div>";
-                    echo "<br><br><br>";
                     $result_species_id = explode("-", $result_species_id, 2);
-
-                    echo "<div class='col-md-6' style='font-size:150%'>";
-                    echo "Species: ";
-                    echo "<strong>" . $result_species_id[0] . "</strong>";
-                    echo "</div>";
-
-                    echo "<div class='col-md-6' style='font-size:150%'>";
-                    echo "GeneID: ";
-                    echo "<strong>" . $result_species_id[1] . "</strong>";
-                    echo "</div>";
-
-                    echo "<textarea style='width: 1240px; height: 600px'>" . $v . "</textarea><br>";
+                    echo "          <tr>
+                                    <td>" . $result_species_id[0] . "</td>
+                                    <td>" . $result_species_id[1] . "</td>
+                                    <td><textarea style='width: 1000px; height: 300px'>" . $v . "</textarea></td>
+                                    </tr>";
                 }
-                echo "</div>";
+                    echo "      </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </section>";
             }
         }
         if (file_exists($target_file)) system("rm $target_file");
@@ -496,7 +485,15 @@
 </script>
 <script>
     $(document).ready(function() {
-        $('#tablesort').DataTable();
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            $.fn.dataTable.tables({
+                visible: true,
+                api: true
+            }).columns.adjust();
+        });
+        $('#information').DataTable();
+        
+        $('#alignment').DataTable();
     });
 </script>
 
