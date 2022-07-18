@@ -111,7 +111,7 @@
     </section>
     <br><br><br><br>
     <div id='BLAST_SETTING'></div>
-    
+
     <?php
     if (isset($_POST["evalue"])) {
         $id = time();
@@ -329,28 +329,39 @@
             echo "<section class='home-section color-dark'>";
             echo "
             <div class='container'>
-            <div class='row'>
-                <div class='col-lg-8 col-lg-offset-2'>
-                    <div class='section-heading text-center'>
+                <div class='row'>
+                    <div class='col-lg-8 col-lg-offset-2'>
+                        <div class='section-heading text-center'>
                         <h2 class='h-bold'>";
-            if ($return_var != 0) {
-                echo "Blast fail :(<br>
+                    if ($return_var != 0) {
+                    echo "Blast fail :(<br>
                         </h2>
+                        </div>
+                        <hr class='marginbot-50'>
                     </div>
-                <hr class='marginbot-50'>
-                </div>
-            </div>";
-            } else {
+                </div>";
+                    } else {
                 echo "BLAST RESULT";
-                echo "      </h2>
-                     </div>
-                <hr class='marginbot-50'>
-                </div>
-            </div>";
+                echo "  </h2>
+                        </div>
+                        <hr class='marginbot-50'>
+                    </div>
+                </div>";
 
                 $result_num = sizeof($blast_result);
                 if ($result_num >= 2) {
                     $result_num--;
+                    echo "
+                    <ul class=nav nav-tabs>
+                        <li class='active'>
+                            <a herf='tab-tab1' data-toggle='tab'>Information</a>
+                        </li>
+                        <li>
+                        <a herf='tab-tab2' data-toggle='tab'>Alignment</a>
+                        </li>
+                    </ul>";
+                    echo "<div class='tab-content'>
+                    <div class='tab-pane active' id='tab-table1'>";
                     echo "<div class='table-responsive'>";
                     echo "<table class='table' align='center' width='1240px' id='tablesort'>";
                     echo "<thead>";
@@ -400,6 +411,8 @@
                     echo "</table>";
                     echo "</div>";
                     echo "</div>";
+                    echo "</div>";
+                    echo "</div>";
                     echo "</section>";
                 }
                 mysqli_close($link);
@@ -424,6 +437,13 @@
                 echo "<div class='container'>";
                 foreach ($alignment_result as $v) {
                     $result_species_id = substr($v, 0, strpos($v, "\n", 0));
+                    echo "
+                    <div class='tab-content'>
+                    <div class='tab-pane active' id='tab-table1'>
+                        <div class='table-responsive'>
+                            <table class='table' align='center' width='1240px' id='tablesort'>
+                                <thead>
+                                    <tr>"
                     echo "<div id='" . $result_species_id . "'></div>";
                     echo "<br><br><br>";
                     $result_species_id = explode("-", $result_species_id, 2);
