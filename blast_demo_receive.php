@@ -8,20 +8,19 @@
     <meta name="author" content="">
 
     <title>PlantPAN 3.0</title>
-
+    
     <!-- css -->
+    <script type="text/javascript" src="css/jquery-2.1.1.min.js"></script>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="css/style.css" rel="stylesheet">
     <link href="color/default.css" rel="stylesheet">
     <link href="css/magicsuggest.css" rel="stylesheet">
-    <script type="text/javascript" src="css/colorbox/jquery-1.11.1.min.js"></script>
+    <link href="css/datatables.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
     <script type="text/javascript" src="css/colorbox/colorbox/jquery.colorbox-min.js"></script>
     <!-- Use table sort -->
-    <script type="text/javascript" src="./css/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./css/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="./css/datatables.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="./css/datatables.min.css" />
+    <script type="text/javascript" src="css/bootstrap.min.js"></script>
+    <script type="text/javascript" src="css/datatables.min.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-45242567-12"></script>
     <script>
@@ -306,9 +305,9 @@
             //BLAST N OR P
             $query = "";
             if ($blast_type == "n") {
-                $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
+                $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt '6 qseqid sseqid sstart send pident evalue bitscore' -evalue $evalue";
             } else if ($blast_type == "p") {
-                $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt '6 qseqid sseqid pident evalue bitscore' -evalue $evalue";
+                $query = "/home/C54076275/ncbi-blast-2.13.0+/bin/blastn -db \"" . implode(" ", $species) . "\" -query  $target_file -out $output_file -outfmt '6 qseqid sseqid sstart send pident evalue bitscore' -evalue $evalue";
             }
             system($query, $return_var);
             chmod($output_file, 0777);
@@ -368,20 +367,30 @@
                     echo "          <table class='table' width='1240px' id='information'>";
                     echo "          <thead>";
                     echo "              <tr>";
-                    echo "              <th>Alignment</th>";
-                    echo "              <th>Species</th>";
-                    echo "              <th>Target sequence id</th>";
-                    echo "              <th>Identical matches (%)</th>";
-                    echo "              <th>E-value</th>";
-                    echo "              <th>Bit score</th>";
-                    echo "              <th>Download</th>";
+                    echo "              <th rowspan='2'>Alignment</th>";
+                    echo "              <th rowspan='2'>Species</th>";
+                    echo "              <th rowspan='2'>Target sequence ID</th>";
+                    echo "              <th colspan='2'>Subject</th>";
+                    echo "              <th rowspan='2'>Identical matches (%)</th>";
+                    echo "              <th rowspan='2'>E-value</th>";
+                    echo "              <th rowspan='2'>Bit score</th>";
+                    echo "              <th rowspan='2'>Download</th>";
+                    echo "              </tr>";
+                    echo "              <tr>";
+                    echo "              <th>Start</th>";
+                    echo "              <th>End</th>";
                     echo "              </tr>";
                     echo "          </thead>";
                     echo "          <tbody>";
                     for ($i = 0; $i < $result_num; $i++) {
                         echo "          <tr>";
                         echo "          <td>";
-                        echo "          <a href=\"#" . $blast_result[$i][1] . "\"><img src='./img/icons/left-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
+                        echo "<a href='#' id='toali' onclick=
+                        \"$('#alignment').DataTable().search('" . $blast_result[$i][1] . "').draw();
+                        $('.nav-tabs a[href=#tab-table2]').tab('show');
+                        return false;
+                        \">
+                        <img src='./img/icons/left-chevron.png' alt='To Alignment' height=30px align='center' ></a>";
                         echo "          </td>";
                         foreach ($blast_result[$i] as $k => $v) {
                             if ($k == 1) {
@@ -428,9 +437,9 @@
                                 <table class='table' align='center' width='1240px' id='alignment'>
                                 <thead>
                                     <tr>
-                                    <td>Species</td>
-                                    <td>GeneID</td>
-                                    <td>Aligment</td>
+                                    <th>Species</th>
+                                    <th>GeneID</th>
+                                    <th>Aligment</th>
                                     </tr>
                                 </thead>
                                 <tbody>";
@@ -443,7 +452,7 @@
                                     <td><textarea style='width: 1000px; height: 300px'>" . $v . "</textarea></td>
                                     </tr>";
                 }
-                    echo "      </tbody>
+                echo "      </tbody>
                                 </table>
                             </div>
                         </div>
@@ -492,7 +501,6 @@
             }).columns.adjust();
         });
         $('#information').DataTable();
-        
         $('#alignment').DataTable();
     });
 </script>
